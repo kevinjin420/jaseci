@@ -3320,13 +3320,13 @@ class JacParser(Transform[uni.Source, uni.Module]):
         def filter_compare_item(self, _: None) -> uni.CompareExpr:
             """Grammar rule.
 
-            filter_compare_item: name_ref cmp_op expression
+            filter_compare_item: atomic_chain cmp_op expression
             """
-            name_ref = self.consume(uni.Name)
+            filter_ref = self.consume(uni.Expr)
             cmp_op = self.consume(uni.Token)
             expr = self.consume(uni.Expr)
             return uni.CompareExpr(
-                left=name_ref, ops=[cmp_op], rights=[expr], kid=self.cur_nodes
+                left=filter_ref, ops=[cmp_op], rights=[expr], kid=self.cur_nodes
             )
 
         def assign_compr(self, _: None) -> uni.AssignCompr:

@@ -3122,32 +3122,53 @@ class PyastGenPass(BaseAstGenPass[ast3.AST]):
             if node.f_type
             else []
         )
-        comprs.extend(
-            self.sync(
-                ast3.Compare(
-                    left=self.sync(
-                        ast3.Attribute(
-                            value=self.sync(
-                                ast3.Name(
-                                    id=iter_name,
-                                    ctx=ast3.Load(),
-                                ),
-                                jac_node=x,
-                            ),
-                            attr=x.gen.py_ast[0].left.id,
-                            ctx=ast3.Load(),
-                        ),
-                        jac_node=x,
+        def transform_filter_ref(
+            expr: ast3.expr, iter_name: str
+        ) -> ast3.expr | None:
+            """Transform filter ref by prepending iter_name as attribute access."""
+            if isinstance(expr, ast3.Name):
+                iter_node = ast3.Name(id=iter_name, ctx=ast3.Load())
+                ast3.copy_location(iter_node, expr)
+                result = ast3.Attribute(value=iter_node, attr=expr.id, ctx=ast3.Load())
+                ast3.copy_location(result, expr)
+                return result
+            elif isinstance(expr, ast3.Subscript):
+                transformed_value = transform_filter_ref(expr.value, iter_name)
+                if transformed_value is None:
+                    return None
+                result = ast3.Subscript(
+                    value=transformed_value, slice=expr.slice, ctx=ast3.Load()
+                )
+                ast3.copy_location(result, expr)
+                return result
+            elif isinstance(expr, ast3.Attribute):
+                transformed_value = transform_filter_ref(expr.value, iter_name)
+                if transformed_value is None:
+                    return None
+                result = ast3.Attribute(
+                    value=transformed_value, attr=expr.attr, ctx=ast3.Load()
+                )
+                ast3.copy_location(result, expr)
+                return result
+            return None
+
+        for x in node.compares:
+            if not isinstance(x.gen.py_ast[0], ast3.Compare):
+                continue
+            left = x.gen.py_ast[0].left
+            transformed_left = transform_filter_ref(left, iter_name)
+            if transformed_left is None:
+                continue
+            comprs.append(
+                self.sync(
+                    ast3.Compare(
+                        left=self.sync(transformed_left, jac_node=x),
+                        ops=x.gen.py_ast[0].ops,
+                        comparators=x.gen.py_ast[0].comparators,
                     ),
-                    ops=x.gen.py_ast[0].ops,
-                    comparators=x.gen.py_ast[0].comparators,
-                ),
-                jac_node=x,
+                    jac_node=x,
+                )
             )
-            for x in node.compares
-            if isinstance(x.gen.py_ast[0], ast3.Compare)
-            and isinstance(x.gen.py_ast[0].left, ast3.Name)
-        )
 
         if body := (
             self.sync(

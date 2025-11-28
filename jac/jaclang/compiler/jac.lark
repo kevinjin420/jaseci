@@ -435,7 +435,7 @@ filter_compr: LPAREN NULL_OK filter_compare_list RPAREN
 assign_compr: LPAREN EQ kw_expr_list RPAREN
 filter_compare_list: (filter_compare_list COMMA)? filter_compare_item
 typed_filter_compare_list: expression (COLON filter_compare_list)?
-filter_compare_item: named_ref cmp_op expression
+filter_compare_item: atomic_chain cmp_op expression
 
 // [Heading]: Names and references.
 named_ref: special_ref
