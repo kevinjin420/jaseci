@@ -2,7 +2,7 @@
 
 Jac is a new language. AI models tend to hallucinate syntax from outdated or nonexistent versions, and things break. To fix this, we maintain an official condensed language reference designed specifically for LLM context windows: [jaseci-llmdocs](https://github.com/jaseci-labs/jaseci-llmdocs).
 
-Grab the latest `candidate.txt` from the [releases page](https://github.com/jaseci-labs/jaseci-llmdocs/releases/latest) and paste it into your AI tool's persistent context. 
+Grab the latest `candidate.txt` from the [releases page](https://github.com/jaseci-labs/jaseci-llmdocs/releases/latest) and paste it into your AI tool's persistent context.
 
 ```bash
 curl -LO https://github.com/jaseci-labs/jaseci-llmdocs/releases/latest/download/candidate.txt
