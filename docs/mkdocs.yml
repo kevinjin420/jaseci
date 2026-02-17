@@ -15,6 +15,7 @@ nav:
       - Core Concepts: "quick-guide/what-makes-jac-different.md"
       - Jac vs Traditional Stack: "quick-guide/jac-vs-traditional-stack.md"
       - FAQ: "quick-guide/faq.md"
+      - LLM Docs: "quick-guide/llmdocs.md"
       - Next Steps: "quick-guide/next-steps.md"
 
   - Tutorials:
@@ -36,7 +37,6 @@ nav:
           - Structured Outputs: "tutorials/ai/structured-outputs.md"
           - Agentic AI & Tools: "tutorials/ai/agentic.md"
           - Multimodal (Images & Video): "tutorials/ai/multimodal.md"
-          - Using AI Tools with Jac: "tutorials/ai/ai-tools.md"
       - Full-Stack Apps:
           - Project Setup: "tutorials/fullstack/setup.md"
           - React-Style Components: "tutorials/fullstack/components.md"
@@ -238,6 +238,9 @@ plugins:
         learn/installation.md: quick-guide/install.md
         learn/quickstart.md: tutorials/language/osp.md
         learn/tour.md: quick-guide/index.md
+
+        # AI tools redirect
+        tutorials/ai/ai-tools.md: quick-guide/llmdocs.md
 
         # byLLM redirects
         learn/jac-byllm/quickstart.md: tutorials/ai/quickstart.md
