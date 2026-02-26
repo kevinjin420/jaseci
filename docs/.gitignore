@@ -1,8 +1,3 @@
-site/
-*jaclang.zip
-*uniir_node.md
-*jac_ref.md
-*jac_ref/
-*top_contributors.md
-docs/assets/github_stats.json
-_planning
+node_modules/
+dist/
+.astro/

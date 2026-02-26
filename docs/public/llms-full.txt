@@ -1,0 +1,226 @@
+# Jac Programming Language - Full Reference
+
+> Jac is an AI-native programming language created by @marsninja and the Jac Hackers community.
+> It supersets Python and JavaScript with novel constructs for AI-integrated, graph-based,
+> and scale-native programming. Part of the Jaseci ecosystem.
+
+## Installation
+
+```bash
+pip install jaseci
+jac --version
+```
+
+This installs: jaclang (compiler), byllm (AI integration), jac-client (frontend),
+jac-scale (deployment), jac-super (enhanced console).
+
+## Language Overview
+
+### Python Superset
+All Python code is valid Jac. Jac adds new keywords and constructs on top.
+
+### Type System
+Jac uses Python's type system with additional types:
+- `node`, `edge`, `walker` - graph types
+- `obj` - Jac's class equivalent
+- Standard Python types: str, int, float, list, dict, tuple, set, bool
+
+### Variables and Constants
+```jac
+has name: str = "default";   # instance variable
+glob api_key: str = "...";    # global variable
+let x: int = 42;              # local variable
+```
+
+### Functions (Abilities)
+```jac
+can add(a: int, b: int) -> int {
+    return a + b;
+}
+
+# Method on a type
+obj Calculator {
+    can multiply(a: int, b: int) -> int {
+        return a * b;
+    }
+}
+```
+
+### AI Integration (by llm)
+```jac
+# Replace function body with LLM call
+can classify(text: str) -> str
+by llm(incl_info=(text));
+
+can summarize(article: str, max_words: int = 100) -> str
+by llm(incl_info=(article, max_words));
+
+# Structured output
+obj Sentiment {
+    has label: str;
+    has score: float;
+    has reasoning: str;
+}
+
+can analyze(text: str) -> Sentiment
+by llm(incl_info=(text));
+```
+
+Configure LLM provider:
+```jac
+import from jac_byllm, Model;
+glob llm = Model(model_name="gpt-4o-mini");
+# Or: "claude-3-5-sonnet-20241022", "gemini/gemini-1.5-flash", etc.
+```
+
+### Object-Spatial Programming
+
+#### Nodes
+```jac
+node Person {
+    has name: str;
+    has age: int;
+}
+
+node City {
+    has name: str;
+    has population: int;
+}
+```
+
+#### Edges
+```jac
+edge LivesIn {
+    has since: int;
+}
+
+edge Knows {
+    has relationship: str;
+}
+```
+
+#### Creating Graphs
+```jac
+alice = Person(name="Alice", age=30);
+bob = Person(name="Bob", age=25);
+nyc = City(name="New York", population=8_000_000);
+
+alice ++> bob;                           # default edge
+alice +[Knows(relationship="friend")]+> bob;  # typed edge
+alice +[LivesIn(since=2020)]+> nyc;
+```
+
+#### Walkers
+```jac
+walker Greeter {
+    has message: str = "Hello";
+
+    can greet with Person entry {
+        print(f"{self.message}, {here.name}!");
+        visit [-->];  # traverse to connected nodes
+    }
+}
+
+# Spawn walker on a node
+root spawn Greeter();
+```
+
+Walker lifecycle:
+- `entry`: runs when walker enters a node
+- `exit`: runs when walker leaves a node
+- `visit [-->]`: traverse outgoing edges
+- `visit [<--]`: traverse incoming edges
+- `disengage`: stop traversal
+
+### Control Flow
+```jac
+if condition { ... }
+elif other { ... }
+else { ... }
+
+for item in collection { ... }
+while condition { ... }
+
+match value {
+    case pattern1: ...
+    case pattern2: ...
+}
+```
+
+### Imports
+```jac
+import:py numpy as np;
+import:py from pandas, DataFrame;
+import from .module, MyClass;
+```
+
+### Testing
+```jac
+test "addition works" {
+    assert 2 + 2 == 4;
+}
+
+test "walker visits all nodes" {
+    # setup graph, spawn walker, check results
+}
+```
+
+Run tests: `jac test myfile.jac`
+
+### Entry Point
+```jac
+with entry {
+    print("Program starts here");
+}
+```
+
+## Full-Stack Development (jac-client)
+
+React-style frontend components:
+```jac
+node TodoApp {
+    has todos: list = [];
+
+    can render {
+        <div>
+            <h1>My Todos</h1>
+            {self.todos.map(|t| <TodoItem todo={t} />)}
+        </div>
+    }
+}
+```
+
+## Deployment
+
+### Local
+```bash
+jac run app.jac          # run locally
+jac serve app.jac        # start API server
+```
+
+### Production
+```bash
+jac start --scale        # deploy to Kubernetes
+```
+
+## CLI Commands
+
+- `jac run <file>` - Execute a Jac program
+- `jac serve <file>` - Start API server
+- `jac test <file>` - Run tests
+- `jac build <file>` - Compile to bytecode
+- `jac start --scale` - Deploy to Kubernetes
+- `jac dot <file>` - Generate graph visualization
+- `jac lsp` - Start language server
+
+## Links
+
+- Documentation: https://jac-lang.org
+- GitHub: https://github.com/Jaseci-Labs/jaseci
+- Discord: https://discord.gg/6j3QNdtcN6
+- JacGPT: https://jac-gpt.jaseci.org
+- Playground: https://playground.jaseci.org
+- Research Papers:
+  - Meaning-Typed Programming: https://arxiv.org/abs/2405.08965
+  - Object-Spatial Programming: https://arxiv.org/abs/2503.15812
+  - Scale-Native Programming: https://arxiv.org/abs/2504.03109

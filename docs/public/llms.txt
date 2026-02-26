@@ -1,0 +1,18 @@
+# Jac Programming Language
+
+> Jac is an AI-native programming language that supersets Python and JavaScript with built-in LLM integration, object-spatial programming, and scale-native deployment.
+
+## Docs for LLMs
+
+- [Jac LLM Docs (comprehensive, auto-generated)](https://github.com/jaseci-labs/jaseci-llmdocs/releases/latest/download/jac-llmdocs.md)
+- [Quick Reference](/llms-full.txt)
+
+## Documentation
+
+- Quick Guide: https://jac-lang.org/
+- Tutorials: https://jac-lang.org/tutorials/
+- Language Reference: https://jac-lang.org/reference/language/
+- AI Integration: https://jac-lang.org/tutorials/ai/quickstart/
+- Full-Stack Guide: https://jac-lang.org/tutorials/fullstack/setup/
+- CLI Reference: https://jac-lang.org/reference/cli/
+- GitHub: https://github.com/Jaseci-Labs/jaseci

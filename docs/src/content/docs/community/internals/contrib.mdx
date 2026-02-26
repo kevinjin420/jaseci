@@ -1,0 +1,262 @@
+---
+title: Contributing Guide
+---# Contrib and Codebase Guide
+
+## Checkout and push ready
+
+**Fork the Repository**
+
+1. Navigate to [https://github.com/jaseci-labs/jaseci](https://github.com/jaseci-labs/jaseci)
+2. Click the **Fork** button in the top-right corner
+3. Select your GitHub account to create the fork
+
+**Clone and Set Up Upstream**
+
+After forking, clone your fork and set up the upstream remote:
+
+```bash
+# Clone your fork (replace YOUR_USERNAME with your GitHub username)
+git clone https://github.com/YOUR_USERNAME/jaseci.git
+cd jaseci
+git submodule update --init --recursive # Pulls in typeshed
+
+# Add the original repository as upstream (may already exist)
+git remote add upstream https://github.com/jaseci-labs/jaseci.git
+
+# Verify your remotes
+git remote -v
+# You should see:
+# origin    https://github.com/YOUR_USERNAME/jaseci.git (fetch)
+# origin    https://github.com/YOUR_USERNAME/jaseci.git (push)
+# upstream  https://github.com/jaseci-labs/jaseci.git (fetch)
+# upstream  https://github.com/jaseci-labs/jaseci.git (push)
+```
+
+**Pushing Your First PR**
+
+1. **Create a new branch** for your changes:
+
+   ```bash
+   git checkout -b your-feature-branch
+   ```
+
+2. **Make your changes** and commit them:
+
+   ```bash
+   git add .
+   git commit -m "Description of your changes"
+   ```
+
+3. **Keep your fork synced** with upstream:
+
+   ```bash
+   git fetch upstream
+   git merge upstream/main
+   ```
+
+4. **Push to your fork**:
+
+   ```bash
+   git push origin your-feature-branch
+   ```
+
+5. **Create a Pull Request**:
+   - Go to your fork on GitHub
+   - Click **Compare & pull request**
+   - Fill in the PR description with details about your changes
+   - Submit the pull request to the `main` branch of `jaseci-labs/jaseci`
+
+:::tip[PR Best Practices]
+- Make sure all pre-commit checks pass before pushing
+- Run tests locally using the test script above
+- Keep your PR focused on a single feature or fix
+- Write clear commit messages and PR descriptions
+:::
+
+
+## General Setup and Information
+
+To get setup run
+
+```bash
+python3 -m venv ~/.jacenv/
+source ~/.jacenv/bin/activate
+pip3 install pre-commit pytest pytest-xdist
+pre-commit install
+```
+
+Pre-commit handles all linting (ruff), formatting, and type checking (mypy) automatically when you commit.
+
+<details>
+<summary>Our pre-commit process</summary>
+
+```yaml linenums="1"
+ci:
+  skip: [jac-format]
+
+exclude: |
+    (?x)(
+        ^jac/jaclang/vendor/|
+        ^$
+    )
+
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: check-yaml
+        args: [--allow-multiple-documents, --unsafe]
+      - id: check-json
+      - id: trailing-whitespace
+      - id: mixed-line-ending
+        args: [--fix=lf]
+      - id: end-of-file-fixer
+  - repo: https://github.com/DavidAnson/markdownlint-cli2
+    rev: v0.20.0
+    hooks:
+    - id: markdownlint-cli2
+      args: [--fix]
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.14.14
+    hooks:
+      - id: ruff
+        args: [--fix]
+      - id: ruff-format
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.19.1
+    hooks:
+      - id: mypy
+        args:
+          - --ignore-missing-imports
+          - --config-file=mypy.ini
+          - --explicit-package-bases
+        additional_dependencies: [types-PyYAML, types-requests]
+        exclude: (/fixtures/|/vendor/|/scripts/|jac/examples/reference)
+  - repo: local
+    hooks:
+      - id: check-no-binary-files
+        name: Check for binary files
+        entry: Binary files are not allowed
+        language: fail
+        types: [binary]
+        exclude: |
+          (?x)(
+              ^jac-client/jac_client/examples/all-in-one/assets/burger.png$|
+              ^docs/docs/assets/logo\.png$|
+              ^docs/docs/assets/org1_logo\.png$|
+              ^docs/docs/assets/org2_logo\.png$|
+              ^docs/docs/assets/org3_logo\.png$|
+              ^jac-byllm/examples/vision/math_question\.jpg$|
+              ^jac-byllm/examples/vision/mugen\.mp4$|
+              ^jac-byllm/examples/vision/person\.png$|
+              ^jac-byllm/examples/vision/receipt\.jpg$|
+              ^jac-byllm/tests/fixtures/SampleVideo_1280x720_2mb\.mp4$|
+              ^jac-byllm/tests/fixtures/alan-m-turing\.jpg$|
+              ^jac-byllm/tests/fixtures/image\.jpg$|
+              ^jac-byllm/tests/fixtures/math_question\.jpg$|
+              ^jac-byllm/tests/fixtures/webp_image_of_person\.webp$|
+              ^jac-client/jac_client/examples/asset-serving/css-with-image/assets/burger\.png$|
+              ^jac-client/jac_client/examples/asset-serving/image-asset/assets/burger\.png$|
+              ^jac-client/jac_client/examples/asset-serving/import-alias/assets/burger\.png$|
+              ^jac/examples/rpg_game/jac_impl/fonts/8bitoperator_jve\.ttf$|
+              ^jac/examples/rpg_game/lib_mode/8bitoperator_jve\.ttf$
+          )
+
+      - id: ban-em-dashes
+        name: Ban em-dashes (—)
+        language: pygrep
+        entry: '—'
+        types: [markdown]
+
+      - id: jac-format
+        name: jac-format
+        description: Format and lint-fix Jac files
+        entry: env PYTHONPATH=jac python3 -m jaclang format
+        language: python
+        types: [file]
+        args: [--lintfix]
+        files: \.jac$
+        require_serial: true
+        exclude: (/fixtures/|_err\.jac$|_syntax_err\.jac$|^scripts/)
+        additional_dependencies: [llvmlite>=0.43.0]
+
+```
+
+</details>
+
+
+This is how we run our tests.
+
+```bash
+pytest -n auto jac
+pytest jac-scale
+pytest jac-byllm
+jac test jac/examples/littleX/littleX.test.jac
+
+```
+
+## Run docs site locally
+
+```bash
+pip install -e docs
+python docs/scripts/mkdocs_serve.py
+
+```
+
+## Release Flow (Automated)
+
+Releasing new versions to PyPI is a two-step process using GitHub Actions.
+
+### Step 1: Create and Merge the Release PR
+
+1. Go to **GitHub Actions** → **Create Release PR**
+2. Click **Run workflow**
+3. For each package, select the version bump type (`skip`, `patch`, `minor`, or `major`)
+4. Click **Run workflow**
+
+**What happens automatically:**
+
+- The workflow runs `scripts/release.py` to bump versions in the relevant `pyproject.toml` files
+- Creates a new branch with the version changes
+- Opens a PR with a summary of all version bumps (example: [PR #4675](https://github.com/jaseci-labs/jaseci/pull/4675))
+
+1. **Review the PR** - Verify the version bumps are correct
+2. Wait for CI tests to pass, then **approve and merge** the PR to main
+
+### Step 2: Publish to PyPI
+
+After the release PR is merged, manually trigger the release workflow for each bumped package.
+
+:::caution[Release Order]
+Packages must be released in dependency order. **jaclang must be released first** since other packages depend on it.
+:::
+
+
+| Order | Package | Workflow | Dependencies |
+|-------|---------|----------|--------------|
+| 1 | **jaclang** | Release jaclang to PYPI | None (core package) |
+| 2 | **jac-client** | Release jac-client to PYPI | jaclang |
+| 3 | **jac-byllm** | Release jac-byllm to PYPI | jaclang |
+| 4 | **jac-scale** | Release jac-scale to PYPI | jaclang |
+| 5 | **jac-super** | Release jac-super to PYPI | jaclang |
+| 6 | **jaseci** | Release jaseci to PYPI | Meta-package (release last) |
+
+#### How to Trigger a Release
+
+For each package you need to release:
+
+1. Go to **GitHub Actions** → Select the appropriate release workflow
+2. Click **Run workflow**
+3. Click **Run workflow** again to confirm
+
+**What happens automatically:**
+
+- Precompiles bytecode for Python 3.12, 3.13, and 3.14
+- Builds the package distribution
+- Publishes to PyPI
+
+:::tip[Best Practice]
+Wait for each workflow to complete successfully before starting the next one. Check the Actions tab to monitor progress.
+:::
+
