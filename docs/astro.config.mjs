@@ -38,7 +38,7 @@ export default defineConfig({
       customCss: ["./src/styles/custom.css"],
       expressiveCode: {
         frames: false,
-        themes: ["tokyo-night", "github-light"],
+        themes: ["dracula", "github-light"],
         shiki: {
           langs: [
             {
@@ -68,7 +68,7 @@ export default defineConfig({
           tag: "link",
           attrs: {
             rel: "stylesheet",
-            href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap",
+            href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Mono:wght@400;500;700&family=JetBrains+Mono:wght@400;500;600&display=swap",
           },
         },
         {

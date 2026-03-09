@@ -2,7 +2,7 @@
   --jac-accent: #ff6b35;
   --jac-accent-rgb: 255, 107, 53;
   --sl-font: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  --sl-font-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Code', 'Fira Code', Menlo, monospace;
+  --sl-font-mono: 'Fira Mono', 'JetBrains Mono', ui-monospace, 'Cascadia Code', Menlo, Consolas, monospace;
 }
 
 :root[data-theme='light'] {
